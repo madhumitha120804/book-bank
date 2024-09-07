@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Bank - Admin</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Book Bank Admin</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="books.html">Request Books</a>
+            <a href="admin.html">Admin</a>
+        </nav>
+    </header>
+    
+    <main>
+        <section class="add-book">
+            <h2>Add New Book</h2>
+            <form id="add-book-form">
+                <label for="book-title">Book Title:</label>
+                <input type="text" id="book-title" name="book-title" required>
+                
+                <label for="available">Available Quantity:</label>
+                <input type="number" id="available" name="available" min="1" required>
+                
+                <button type="submit">Add Book</button>
+            </form>
+            <p id="add-book-message"></p>
+        </section>
+    </main>
+    
+    <script>
+        document.getElementById('add-book-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            
+            const title = document.getElementById('book-title').value;
+            const available = document.getElementById('available').value;
+            const token = localStorage.getItem('token'); // Ensure token is retrieved correctly
+            
+            try {
+                const response = await fetch('http://localhost:3000/add-book', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': token // Ensure token is correctly included
+                    },
+                    body: JSON.stringify({ title, available })
+                });
+
+                if (response.ok) {
+                    document.getElementById('add-book-message').textContent = 'Book added successfully';
+                } else {
+                    const errorMessage = await response.text();
+                    document.getElementById('add-book-message').textContent = `Failed to add book. ${errorMessage}`;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('add-book-message').textContent = 'Failed to add book. Please try again.';
+            }
+        });
+    </script>
+</body>
+</html>
+
